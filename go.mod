@@ -1,14 +1,14 @@
-module github.com/chaosblade-io/chaosblade
+module chaosblade
 
-go 1.13
+go 1.15
 
 require (
-	github.com/chaosblade-io/chaosblade-exec-docker v0.6.1-0.20200921114755-4cee68e4d222
-	github.com/chaosblade-io/chaosblade-exec-os v0.6.1-0.20200921123927-969283bd6023
-	github.com/chaosblade-io/chaosblade-operator v0.6.1-0.20200921124205-7d1cccee769a
-	github.com/chaosblade-io/chaosblade-spec-go v0.6.1-0.20200921114450-db5b1476998d
+	github.com/chaosblade-io/chaosblade v0.8.0
+	github.com/chaosblade-io/chaosblade-exec-docker v0.8.0
+	github.com/chaosblade-io/chaosblade-exec-os v0.8.0
+	github.com/chaosblade-io/chaosblade-operator v0.8.0
+	github.com/chaosblade-io/chaosblade-spec-go v0.8.0
 	github.com/mattn/go-sqlite3 v1.10.1-0.20190217174029-ad30583d8387
-	github.com/prometheus/common v0.9.1
 	github.com/shirou/gopsutil v2.20.5+incompatible
 	github.com/sirupsen/logrus v1.5.0
 	github.com/spf13/cobra v0.0.5
