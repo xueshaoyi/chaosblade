@@ -34,6 +34,7 @@ import (
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"encoding/json"
 )
 
 const ResourceName = "chaosblades"
@@ -183,6 +184,8 @@ func (e *Executor) create(cli client.Client, kubeconfig string, uid string, expM
 	logrus.Infof("create uid: %s, target: %s, scope: %s, action: %s", uid, expModel.Target, expModel.Scope, expModel.ActionName)
 	//log.Info("create", "uid", uid, "target", expModel.Target, "scope", expModel.Scope, "action", expModel.ActionName)
 	chaosBladeObj := convertExpModelToChaosBladeObject(uid, expModel)
+	jsstr, _ := json.Marshal(chaosBladeObj)
+	logrus.Infof("chaosBladeObj : %s", string(jsstr))
 	var err error
 	resource, err := create(cli, &chaosBladeObj)
 	if err != nil {
