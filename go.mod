@@ -3,11 +3,10 @@ module chaosblade
 go 1.15
 
 require (
-	github.com/chaosblade-io/chaosblade v0.8.0
-	github.com/chaosblade-io/chaosblade-exec-docker v0.8.0
-	github.com/chaosblade-io/chaosblade-exec-os v0.8.0
-	github.com/chaosblade-io/chaosblade-operator v0.8.0
-	github.com/chaosblade-io/chaosblade-spec-go v0.8.0
+	github.com/chaosblade-io/chaosblade-exec-docker v0.9.0
+	github.com/chaosblade-io/chaosblade-exec-os v0.9.0
+	github.com/chaosblade-io/chaosblade-operator v0.9.0
+	github.com/chaosblade-io/chaosblade-spec-go v0.9.0
 	github.com/mattn/go-sqlite3 v1.10.1-0.20190217174029-ad30583d8387
 	github.com/shirou/gopsutil v2.20.5+incompatible
 	github.com/sirupsen/logrus v1.5.0
