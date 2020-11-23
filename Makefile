@@ -50,11 +50,11 @@ BLADE_EXEC_DOCKER_PROJECT=https://github.com/chaosblade-io/chaosblade-exec-docke
 BLADE_EXEC_DOCKER_BRANCH=master
 
 # chaosblade-exec-kubernetes
-BLADE_OPERATOR_PROJECT=https://github.com/chaosblade-io/chaosblade-operator.git
+BLADE_OPERATOR_PROJECT=https://git.shuiditech.com/itest/chaosblade-operator.git
 BLADE_OPERATOR_BRANCH=master
 
 # chaosblade-exec-jvm
-BLADE_EXEC_JVM_PROJECT=https://github.com/chaosblade-io/chaosblade-exec-jvm.git
+BLADE_EXEC_JVM_PROJECT=https://git.shuiditech.com/itest/chaosblade-exec-jvm.git
 BLADE_EXEC_JVM_BRANCH=master
 
 # chaosblade-exec-cplus

@@ -3,6 +3,7 @@ module chaosblade
 go 1.15
 
 require (
+	github.com/chaosblade-io/chaosblade v0.9.0
 	github.com/chaosblade-io/chaosblade-exec-docker v0.9.0
 	github.com/chaosblade-io/chaosblade-exec-os v0.9.0
 	github.com/chaosblade-io/chaosblade-operator v0.9.0

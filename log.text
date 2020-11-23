@@ -1,0 +1,1428 @@
+mkdir -p target/cache
+rm -rf target/chaosblade-0.9.0 target/chaosblade-0.9.0.tar.gz
+mkdir -p target/chaosblade-0.9.0/bin target/chaosblade-0.9.0/lib target/chaosblade-0.9.0/yaml
+env CGO_ENABLED=1 GO111MODULE=on go build -ldflags="-X github.com/chaosblade-io/chaosblade/version.Ver=0.9.0 -X 'github.com/chaosblade-io/chaosblade/version.Env=`uname -mv`' -X 'github.com/chaosblade-io/chaosblade/version.BuildTime=`date`' -X github.com/chaosblade-io/chaosblade-exec-docker/version.BladeVersion=0.9.0 -X github.com/chaosblade-io/chaosblade-exec-os/version.BladeVersion=0.9.0 -s -w" -o target/chaosblade-0.9.0/blade ./cli
+git clone -b master https://github.com/chaosblade-io/chaosblade-exec-os.git target/cache/chaosblade-exec-os
+make build_darwin -C target/cache/chaosblade-exec-os
+rm -rf target/chaosblade-0.9.0 
+mkdir -p target/chaosblade-0.9.0/bin target/chaosblade-0.9.0/yaml
+env CGO_ENABLED=1 GO111MODULE=on go run build/spec.go target/chaosblade-0.9.0/yaml/chaosblade-os-spec-0.9.0.yaml
+env CGO_ENABLED=1 GO111MODULE=on go build -ldflags="-s -w" -o target/chaosblade-0.9.0/bin/chaos_burncpu exec/bin/burncpu/burncpu.go
+env CGO_ENABLED=1 GO111MODULE=on go build -ldflags="-s -w" -o target/chaosblade-0.9.0/bin/chaos_killprocess exec/bin/killprocess/killprocess.go
+env CGO_ENABLED=1 GO111MODULE=on go build -ldflags="-s -w" -o target/chaosblade-0.9.0/bin/chaos_stopprocess exec/bin/stopprocess/stopprocess.go
+env CGO_ENABLED=1 GO111MODULE=on go build -ldflags="-s -w" -o target/chaosblade-0.9.0/bin/chaos_changedns exec/bin/changedns/changedns.go
+env CGO_ENABLED=1 GO111MODULE=on go build -ldflags="-s -w" -o target/chaosblade-0.9.0/bin/chaos_occupynetwork exec/bin/occupynetwork/occupynetwork.go
+env CGO_ENABLED=1 GO111MODULE=on go build -ldflags="-s -w" -o target/chaosblade-0.9.0/bin/chaos_appendfile exec/bin/file/appendfile/appendfile.go
+env CGO_ENABLED=1 GO111MODULE=on go build -ldflags="-s -w" -o target/chaosblade-0.9.0/bin/chaos_chmodfile exec/bin/file/chmodfile/chmodfile.go
+env CGO_ENABLED=1 GO111MODULE=on go build -ldflags="-s -w" -o target/chaosblade-0.9.0/bin/chaos_addfile exec/bin/file/addfile/addfile.go
+env CGO_ENABLED=1 GO111MODULE=on go build -ldflags="-s -w" -o target/chaosblade-0.9.0/bin/chaos_deletefile exec/bin/file/deletefile/deletefile.go
+env CGO_ENABLED=1 GO111MODULE=on go build -ldflags="-s -w" -o target/chaosblade-0.9.0/bin/chaos_movefile exec/bin/file/movefile/movefile.go
+cp target/cache/chaosblade-exec-os/target/chaosblade-0.9.0/bin/* target/chaosblade-0.9.0/bin
+cp target/cache/chaosblade-exec-os/target/chaosblade-0.9.0/yaml/* target/chaosblade-0.9.0/yaml
+git clone -b master https://github.com/chaosblade-io/chaosblade-exec-docker.git target/cache/chaosblade-exec-docker
+make -C target/cache/chaosblade-exec-docker
+rm -rf target/chaosblade-0.9.0
+mkdir -p target/chaosblade-0.9.0/yaml
+env CGO_ENABLED=1 GO111MODULE=on go run build/spec.go target/chaosblade-0.9.0/yaml/chaosblade-docker-spec-0.9.0.yaml
+cp target/cache/chaosblade-exec-docker/target/chaosblade-0.9.0/yaml/* target/chaosblade-0.9.0/yaml
+git clone -b master https://github.com/chaosblade-io/chaosblade-operator.git target/cache/chaosblade-operator
+make -C target/cache/chaosblade-operator
+rm -rf target/chaosblade-0.9.0 
+mkdir -p target/chaosblade-0.9.0/bin target/chaosblade-0.9.0/yaml build/cache
+wget "https://chaosblade.oss-cn-hangzhou.aliyuncs.com/agent/github/0.9.0/chaosblade-0.9.0-linux-amd64.tar.gz" -O build/cache/chaosblade-0.9.0-linux-amd64.tar.gz
+tar zxvf build/cache/chaosblade-0.9.0-linux-amd64.tar.gz -C build/cache
+mv build/cache/chaosblade-0.9.0 build/cache/chaosblade
+rm -rf build/cache/chaosblade-0.9.0-linux-amd64.tar.gz
+env CGO_ENABLED=1 GO111MODULE=on go run build/spec.go target/chaosblade-0.9.0/yaml/chaosblade-k8s-spec-0.9.0.yaml build/cache/chaosblade/yaml/chaosblade-jvm-spec-0.9.0.yaml
+env CGO_ENABLED=1 GO111MODULE=on go build -ldflags -X=github.com/chaosblade-io/chaosblade-operator/version.CombinedVersion=0.9.0,community -o target/chaosblade-0.9.0/bin/chaos_fuse  cmd/hookfs/main.go
+cp target/cache/chaosblade-operator/target/chaosblade-0.9.0/bin/* target/chaosblade-0.9.0/bin
+cp target/cache/chaosblade-operator/target/chaosblade-0.9.0/yaml/* target/chaosblade-0.9.0/yaml
+git clone -b master https://github.com/xueshaoyi/chaosblade-exec-jvm.git target/cache/chaosblade-exec-jvm
+make -C target/cache/chaosblade-exec-jvm
+mkdir -p build-target/cache
+wget "https://ompc.oss-cn-hangzhou.aliyuncs.com/jvm-sandbox/release/sandbox-1.3.1-bin.zip" -O build-target/cache/sandbox-1.3.1-bin.zip
+wget "https://chaosblade.oss-cn-hangzhou.aliyuncs.com/agent/release/tools.jar" -O build-target/cache/tools.jar
+rm -rf build-target/chaosblade-0.9.0
+mkdir -p build-target/chaosblade-0.9.0/bin build-target/chaosblade-0.9.0/lib build-target/chaosblade-0.9.0/yaml
+# unzip jvm-sandbox
+unzip build-target/cache/sandbox-1.3.1-bin.zip -d build-target/chaosblade-0.9.0/lib
+Archive:  build-target/cache/sandbox-1.3.1-bin.zip
+   creating: build-target/chaosblade-0.9.0/lib/sandbox/
+   creating: build-target/chaosblade-0.9.0/lib/sandbox/bin/
+  inflating: build-target/chaosblade-0.9.0/lib/sandbox/bin/sandbox.sh  
+   creating: build-target/chaosblade-0.9.0/lib/sandbox/example/
+  inflating: build-target/chaosblade-0.9.0/lib/sandbox/example/sandbox-debug-module.jar  
+   creating: build-target/chaosblade-0.9.0/lib/sandbox/module/
+  inflating: build-target/chaosblade-0.9.0/lib/sandbox/module/sandbox-mgr-module.jar  
+   creating: build-target/chaosblade-0.9.0/lib/sandbox/provider/
+  inflating: build-target/chaosblade-0.9.0/lib/sandbox/provider/sandbox-mgr-provider.jar  
+   creating: build-target/chaosblade-0.9.0/lib/sandbox/cfg/
+  inflating: build-target/chaosblade-0.9.0/lib/sandbox/cfg/sandbox.properties  
+  inflating: build-target/chaosblade-0.9.0/lib/sandbox/cfg/sandbox-logback.xml  
+ extracting: build-target/chaosblade-0.9.0/lib/sandbox/cfg/version  
+  inflating: build-target/chaosblade-0.9.0/lib/sandbox/install-local.sh  
+   creating: build-target/chaosblade-0.9.0/lib/sandbox/lib/
+  inflating: build-target/chaosblade-0.9.0/lib/sandbox/lib/sandbox-spy.jar  
+  inflating: build-target/chaosblade-0.9.0/lib/sandbox/lib/sandbox-agent.jar  
+  inflating: build-target/chaosblade-0.9.0/lib/sandbox/lib/sandbox-core.jar  
+   creating: build-target/chaosblade-0.9.0/lib/sandbox/sandbox-module/
+# cp tools.jar to lib/sandbox
+cp build-target/cache/tools.jar build-target/chaosblade-0.9.0/lib/sandbox
+rm -rf plugins
+mkdir -p plugins
+mvn clean package -Dmaven.test.skip=true -U
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.alibaba.chaosblade:chaosblade-exec-plugin-jvm:jar:0.9.0
+[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-shade-plugin is missing. @ com.alibaba.chaosblade:chaosblade-exec-plugin-jvm:[unknown-version], /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/pom.xml, line 39, column 21
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] chaosblade-exec-jvm
+[INFO] chaosblade-exec-common
+[INFO] chaosblade-exec-service
+[INFO] chaosblade-exec-bootstrap
+[INFO] chaosblade-exec-bootstrap-jvmsandbox
+[INFO] chaosblade-exec-plugin
+[INFO] chaosblade-exec-plugin-dubbo
+[INFO] chaosblade-exec-plugin-jvm
+[INFO] chaosblade-exec-plugin-mysql
+[INFO] chaosblade-exec-plugin-postgrelsql
+[INFO] chaosblade-exec-plugin-servlet
+[INFO] chaosblade-exec-plugin-druid
+[INFO] chaosblade-exec-plugin-http
+[INFO] chaosblade-exec-plugin-jedis
+[INFO] chaosblade-exec-plugin-rocketmq
+[INFO] chaosblade-exec-plugin-tars
+[INFO] chaosblade-exec-plugin-rabbitmq
+[INFO] chaosblade-exec-plugin-mongodb
+[INFO] chaosblade-exec-plugin-redisson
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-jvm 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-jvm ---
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-common 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-common ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-common ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-common/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-common ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 123 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-common/target/classes
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-common/src/main/java/com/alibaba/chaosblade/exec/common/model/matcher/MatcherModel.java: 某些输入文件使用了未经检查或不安全的操作。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-common/src/main/java/com/alibaba/chaosblade/exec/common/model/matcher/MatcherModel.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-common ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-common ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-common ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-common ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-common/target/chaosblade-exec-common-0.9.0.jar
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-service 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-service ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-service ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-service/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-service ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 18 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-service/target/classes
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-service/src/main/java/com/alibaba/chaosblade/exec/service/handler/DefaultDispatchService.java: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-service/src/main/java/com/alibaba/chaosblade/exec/service/handler/DefaultDispatchService.java使用了未经检查或不安全的操作。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-service/src/main/java/com/alibaba/chaosblade/exec/service/handler/DefaultDispatchService.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-service ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-service ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-service ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-service ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-service/target/chaosblade-exec-service-0.9.0.jar
+[INFO] 
+[INFO] --- exec-maven-plugin:1.6.0:exec (default) @ chaosblade-exec-service ---
+/Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/plugins/chaosblade-jvm-spec-0.9.0.yaml
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-bootstrap 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-bootstrap ---
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-bootstrap-jvmsandbox 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-bootstrap-jvmsandbox ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-bootstrap-jvmsandbox ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 3 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-bootstrap-jvmsandbox ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 6 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-bootstrap/chaosblade-exec-bootstrap-jvmsandbox/target/classes
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-bootstrap/chaosblade-exec-bootstrap-jvmsandbox/src/main/java/com/alibaba/chaosblade/exec/bootstrap/jvmsandbox/SandboxModule.java: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-bootstrap/chaosblade-exec-bootstrap-jvmsandbox/src/main/java/com/alibaba/chaosblade/exec/bootstrap/jvmsandbox/SandboxModule.java使用或覆盖了已过时的 API。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-bootstrap/chaosblade-exec-bootstrap-jvmsandbox/src/main/java/com/alibaba/chaosblade/exec/bootstrap/jvmsandbox/SandboxModule.java: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-bootstrap-jvmsandbox ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-bootstrap-jvmsandbox ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-bootstrap-jvmsandbox ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-bootstrap-jvmsandbox ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-bootstrap/chaosblade-exec-bootstrap-jvmsandbox/target/chaosblade-exec-bootstrap-jvmsandbox-0.9.0.jar
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin ---
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-dubbo 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-dubbo ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-dubbo ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-dubbo ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 17 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-dubbo/target/classes
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-dubbo/src/main/java/com/alibaba/chaosblade/exec/plugin/dubbo/consumer/DubboConsumerEnhancer.java: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-dubbo/src/main/java/com/alibaba/chaosblade/exec/plugin/dubbo/consumer/DubboConsumerEnhancer.java使用了未经检查或不安全的操作。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-dubbo/src/main/java/com/alibaba/chaosblade/exec/plugin/dubbo/consumer/DubboConsumerEnhancer.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-dubbo ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-dubbo ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-dubbo ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-dubbo ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-dubbo/target/chaosblade-exec-plugin-dubbo-0.9.0.jar
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-jvm 0.9.0
+[INFO] ------------------------------------------------------------------------
+Downloading from alimaven: http://maven.aliyun.com/nexus/content/groups/public/org/apache/maven/plugins/maven-shade-plugin/maven-metadata.xml
+Downloading from nexus: http://nexus.shuiditech.com/repository/maven-public/org/apache/maven/plugins/maven-shade-plugin/maven-metadata.xml
+Progress (1): 1.3 kBProgress (2): 1.3 kB | 1.4 kB                             Downloaded from nexus: http://nexus.shuiditech.com/repository/maven-public/org/apache/maven/plugins/maven-shade-plugin/maven-metadata.xml (1.3 kB at 2.8 kB/s)
+Downloaded from alimaven: http://maven.aliyun.com/nexus/content/groups/public/org/apache/maven/plugins/maven-shade-plugin/maven-metadata.xml (1.4 kB at 2.2 kB/s)
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-jvm ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-jvm ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 2 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-jvm ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 57 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/target/classes
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/src/main/java/com/alibaba/chaosblade/exec/plugin/jvm/codecache/DynamicJavaClassGenerator.java: 某些输入文件使用或覆盖了已过时的 API。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/src/main/java/com/alibaba/chaosblade/exec/plugin/jvm/codecache/DynamicJavaClassGenerator.java: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/src/main/java/com/alibaba/chaosblade/exec/plugin/jvm/script/groovy/GroovyScriptEngine.java: 某些输入文件使用了未经检查或不安全的操作。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/src/main/java/com/alibaba/chaosblade/exec/plugin/jvm/script/groovy/GroovyScriptEngine.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-jvm ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-jvm ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-jvm ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-jvm ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/target/chaosblade-exec-plugin-jvm-0.9.0.jar
+[INFO] 
+[INFO] --- maven-shade-plugin:3.2.4:shade (default) @ chaosblade-exec-plugin-jvm ---
+[INFO] Including org.codehaus.groovy:groovy:jar:2.4.13 in the shaded jar.
+[INFO] Including commons-codec:commons-codec:jar:1.2 in the shaded jar.
+[INFO] Excluding com.alibaba.chaosblade:chaosblade-exec-common:jar:0.9.0 from the shaded jar.
+[INFO] Excluding org.slf4j:slf4j-api:jar:1.7.25 from the shaded jar.
+[INFO] Excluding ch.qos.logback:logback-classic:jar:1.2.3 from the shaded jar.
+[INFO] Excluding ch.qos.logback:logback-core:jar:1.2.3 from the shaded jar.
+[INFO] Excluding com.fasterxml.jackson.core:jackson-core:jar:2.11.2 from the shaded jar.
+[INFO] Excluding com.fasterxml.jackson.core:jackson-databind:jar:2.11.2 from the shaded jar.
+[INFO] Excluding com.fasterxml.jackson.core:jackson-annotations:jar:2.11.2 from the shaded jar.
+[INFO] Excluding cglib:cglib:jar:3.2.4 from the shaded jar.
+[INFO] Excluding org.ow2.asm:asm:jar:6.0_ALPHA from the shaded jar.
+[INFO] Excluding org.apache.ant:ant:jar:1.9.6 from the shaded jar.
+[INFO] Excluding org.apache.ant:ant-launcher:jar:1.9.6 from the shaded jar.
+[WARNING] chaosblade-exec-plugin-jvm-0.9.0.jar, commons-codec-1.2.jar, groovy-2.4.13.jar define 1 overlapping resource: 
+[WARNING]   - META-INF/MANIFEST.MF
+[WARNING] maven-shade-plugin has detected that some class files are
+[WARNING] present in two or more JARs. When this happens, only one
+[WARNING] single version of the class is copied to the uber jar.
+[WARNING] Usually this is not harmful and you can skip these warnings,
+[WARNING] otherwise try to manually exclude artifacts based on
+[WARNING] mvn dependency:tree -Ddetail=true and the above output.
+[WARNING] See http://maven.apache.org/plugins/maven-shade-plugin/
+[INFO] Replacing original artifact with shaded artifact.
+[INFO] Replacing /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/target/chaosblade-exec-plugin-jvm-0.9.0.jar with /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/target/chaosblade-exec-plugin-jvm-0.9.0-shaded.jar
+[INFO] Dependency-reduced POM written at: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/dependency-reduced-pom.xml
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-mysql 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-mysql ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-mysql ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-mysql ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 10 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-mysql/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-mysql ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-mysql ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-mysql ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-mysql ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-mysql/target/chaosblade-exec-plugin-mysql-0.9.0.jar
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-postgrelsql 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-postgrelsql ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-postgrelsql ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-postgrelsql ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 10 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-postgrelsql/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-postgrelsql ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-postgrelsql ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-postgrelsql ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-postgrelsql ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-postgrelsql/target/chaosblade-exec-plugin-postgrelsql-0.9.0.jar
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-servlet 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-servlet ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-servlet ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-servlet ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 9 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-servlet/target/classes
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-servlet/src/main/java/com/alibaba/chaosblade/exec/plugin/servlet/ServletParamsMatcher.java: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-servlet/src/main/java/com/alibaba/chaosblade/exec/plugin/servlet/ServletParamsMatcher.java使用了未经检查或不安全的操作。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-servlet/src/main/java/com/alibaba/chaosblade/exec/plugin/servlet/ServletParamsMatcher.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-servlet ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-servlet ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-servlet ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-servlet ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-servlet/target/chaosblade-exec-plugin-servlet-0.9.0.jar
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-druid 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-druid ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-druid ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-druid ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 6 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-druid/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-druid ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-druid ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-druid ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-druid ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-druid/target/chaosblade-exec-plugin-druid-0.9.0.jar
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-http 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:3.1.0:clean (default-clean) @ chaosblade-exec-plugin-http ---
+[INFO] 
+[INFO] --- maven-resources-plugin:3.0.2:resources (default-resources) @ chaosblade-exec-plugin-http ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-http ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 22 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-http/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:3.0.2:testResources (default-testResources) @ chaosblade-exec-plugin-http ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-http ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.22.1:test (default-test) @ chaosblade-exec-plugin-http ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.0.2:jar (default-jar) @ chaosblade-exec-plugin-http ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-http/target/chaosblade-exec-plugin-http-0.9.0.jar
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-jedis 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-jedis ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-jedis ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-jedis ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 10 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jedis/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-jedis ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-jedis ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-jedis ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-jedis ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jedis/target/chaosblade-exec-plugin-jedis-0.9.0.jar
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-rocketmq 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-rocketmq ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-rocketmq ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-rocketmq ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 8 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-rocketmq/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-rocketmq ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-rocketmq ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-rocketmq ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-rocketmq ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-rocketmq/target/chaosblade-exec-plugin-rocketmq-0.9.0.jar
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-tars 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-tars ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-tars ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-tars ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 11 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-tars/target/classes
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-tars/src/main/java/com/alibaba/chaosblade/exec/plugin/tars/client/TarsClientEnhancer.java: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-tars/src/main/java/com/alibaba/chaosblade/exec/plugin/tars/client/TarsClientEnhancer.java使用了未经检查或不安全的操作。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-tars/src/main/java/com/alibaba/chaosblade/exec/plugin/tars/client/TarsClientEnhancer.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-tars ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-tars ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-tars ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-tars ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-tars/target/chaosblade-exec-plugin-tars-0.9.0.jar
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-rabbitmq 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-rabbitmq ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-rabbitmq ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-rabbitmq ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 14 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-rabbitmq/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-rabbitmq ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-rabbitmq ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-rabbitmq ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-rabbitmq ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-rabbitmq/target/chaosblade-exec-plugin-rabbitmq-0.9.0.jar
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-mongodb 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-mongodb ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-mongodb ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-mongodb ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 8 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-mongodb/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-mongodb ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-mongodb ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-mongodb ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-mongodb ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-mongodb/target/chaosblade-exec-plugin-mongodb-0.9.0.jar
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-redisson 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-redisson ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-redisson ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-redisson ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 7 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-redisson/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-redisson ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-redisson ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-redisson ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-redisson ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-redisson/target/chaosblade-exec-plugin-redisson-0.9.0.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] chaosblade-exec-jvm ................................ SUCCESS [  0.172 s]
+[INFO] chaosblade-exec-common ............................. SUCCESS [  4.327 s]
+[INFO] chaosblade-exec-service ............................ SUCCESS [  0.912 s]
+[INFO] chaosblade-exec-bootstrap .......................... SUCCESS [  0.003 s]
+[INFO] chaosblade-exec-bootstrap-jvmsandbox ............... SUCCESS [  0.386 s]
+[INFO] chaosblade-exec-plugin ............................. SUCCESS [  0.003 s]
+[INFO] chaosblade-exec-plugin-dubbo ....................... SUCCESS [  0.293 s]
+[INFO] chaosblade-exec-plugin-jvm ......................... SUCCESS [  2.417 s]
+[INFO] chaosblade-exec-plugin-mysql ....................... SUCCESS [  0.144 s]
+[INFO] chaosblade-exec-plugin-postgrelsql ................. SUCCESS [  0.125 s]
+[INFO] chaosblade-exec-plugin-servlet ..................... SUCCESS [  0.127 s]
+[INFO] chaosblade-exec-plugin-druid ....................... SUCCESS [  0.104 s]
+[INFO] chaosblade-exec-plugin-http ........................ SUCCESS [  0.670 s]
+[INFO] chaosblade-exec-plugin-jedis ....................... SUCCESS [  0.105 s]
+[INFO] chaosblade-exec-plugin-rocketmq .................... SUCCESS [  0.106 s]
+[INFO] chaosblade-exec-plugin-tars ........................ SUCCESS [  0.141 s]
+[INFO] chaosblade-exec-plugin-rabbitmq .................... SUCCESS [  0.148 s]
+[INFO] chaosblade-exec-plugin-mongodb ..................... SUCCESS [  0.106 s]
+[INFO] chaosblade-exec-plugin-redisson .................... SUCCESS [  0.111 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 10.611 s
+[INFO] Finished at: 2020-11-23T14:42:56+08:00
+[INFO] Final Memory: 32M/120M
+[INFO] ------------------------------------------------------------------------
+cp `pwd`/chaosblade-exec-plugin/chaosblade-exec-plugin-*/target/chaosblade-exec-plugin-*.jar plugins
+mvn clean assembly:assembly -Dmaven.test.skip=true -U
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.alibaba.chaosblade:chaosblade-exec-plugin-jvm:jar:0.9.0
+[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-shade-plugin is missing. @ com.alibaba.chaosblade:chaosblade-exec-plugin-jvm:[unknown-version], /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/pom.xml, line 39, column 21
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] chaosblade-exec-jvm
+[INFO] chaosblade-exec-common
+[INFO] chaosblade-exec-service
+[INFO] chaosblade-exec-bootstrap
+[INFO] chaosblade-exec-bootstrap-jvmsandbox
+[INFO] chaosblade-exec-plugin
+[INFO] chaosblade-exec-plugin-dubbo
+[INFO] chaosblade-exec-plugin-jvm
+[INFO] chaosblade-exec-plugin-mysql
+[INFO] chaosblade-exec-plugin-postgrelsql
+[INFO] chaosblade-exec-plugin-servlet
+[INFO] chaosblade-exec-plugin-druid
+[INFO] chaosblade-exec-plugin-http
+[INFO] chaosblade-exec-plugin-jedis
+[INFO] chaosblade-exec-plugin-rocketmq
+[INFO] chaosblade-exec-plugin-tars
+[INFO] chaosblade-exec-plugin-rabbitmq
+[INFO] chaosblade-exec-plugin-mongodb
+[INFO] chaosblade-exec-plugin-redisson
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-jvm 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-jvm ---
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-common 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-common ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-common/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-service 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-service ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-service/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-bootstrap 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-bootstrap ---
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-bootstrap-jvmsandbox 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-bootstrap-jvmsandbox ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-bootstrap/chaosblade-exec-bootstrap-jvmsandbox/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin ---
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-dubbo 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-dubbo ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-dubbo/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-jvm 0.9.0
+[INFO] ------------------------------------------------------------------------
+Downloading from alimaven: http://maven.aliyun.com/nexus/content/groups/public/org/apache/maven/plugins/maven-shade-plugin/maven-metadata.xml
+Downloading from nexus: http://nexus.shuiditech.com/repository/maven-public/org/apache/maven/plugins/maven-shade-plugin/maven-metadata.xml
+Progress (1): 1.4 kB                    Downloaded from alimaven: http://maven.aliyun.com/nexus/content/groups/public/org/apache/maven/plugins/maven-shade-plugin/maven-metadata.xml (1.4 kB at 2.4 kB/s)
+Progress (1): 0.9/1.3 kBProgress (1): 1.3 kB                        Downloaded from nexus: http://nexus.shuiditech.com/repository/maven-public/org/apache/maven/plugins/maven-shade-plugin/maven-metadata.xml (1.3 kB at 2.0 kB/s)
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-jvm ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-mysql 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-mysql ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-mysql/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-postgrelsql 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-postgrelsql ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-postgrelsql/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-servlet 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-servlet ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-servlet/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-druid 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-druid ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-druid/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-http 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:3.1.0:clean (default-clean) @ chaosblade-exec-plugin-http ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-http/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-jedis 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-jedis ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jedis/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-rocketmq 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-rocketmq ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-rocketmq/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-tars 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-tars ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-tars/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-rabbitmq 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-rabbitmq ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-rabbitmq/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-mongodb 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-mongodb ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-mongodb/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-plugin-redisson 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ chaosblade-exec-plugin-redisson ---
+[INFO] Deleting /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-redisson/target
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building chaosblade-exec-jvm 0.9.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] >>> maven-assembly-plugin:2.2-beta-5:assembly (default-cli) > package @ chaosblade-exec-jvm >>>
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-common 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-common ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-common/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-common ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 123 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-common/target/classes
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-common/src/main/java/com/alibaba/chaosblade/exec/common/model/matcher/MatcherModel.java: 某些输入文件使用了未经检查或不安全的操作。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-common/src/main/java/com/alibaba/chaosblade/exec/common/model/matcher/MatcherModel.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-common ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-common ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-common ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-common ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-common/target/chaosblade-exec-common-0.9.0.jar
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-service 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-service ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-service/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-service ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 18 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-service/target/classes
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-service/src/main/java/com/alibaba/chaosblade/exec/service/handler/DefaultDispatchService.java: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-service/src/main/java/com/alibaba/chaosblade/exec/service/handler/DefaultDispatchService.java使用了未经检查或不安全的操作。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-service/src/main/java/com/alibaba/chaosblade/exec/service/handler/DefaultDispatchService.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-service ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-service ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-service ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-service ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-service/target/chaosblade-exec-service-0.9.0.jar
+[INFO] 
+[INFO] --- exec-maven-plugin:1.6.0:exec (default) @ chaosblade-exec-service ---
+/Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/plugins/chaosblade-jvm-spec-0.9.0.yaml
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-bootstrap-jvmsandbox 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-bootstrap-jvmsandbox ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 3 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-bootstrap-jvmsandbox ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 6 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-bootstrap/chaosblade-exec-bootstrap-jvmsandbox/target/classes
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-bootstrap/chaosblade-exec-bootstrap-jvmsandbox/src/main/java/com/alibaba/chaosblade/exec/bootstrap/jvmsandbox/SandboxModule.java: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-bootstrap/chaosblade-exec-bootstrap-jvmsandbox/src/main/java/com/alibaba/chaosblade/exec/bootstrap/jvmsandbox/SandboxModule.java使用或覆盖了已过时的 API。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-bootstrap/chaosblade-exec-bootstrap-jvmsandbox/src/main/java/com/alibaba/chaosblade/exec/bootstrap/jvmsandbox/SandboxModule.java: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-bootstrap-jvmsandbox ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-bootstrap-jvmsandbox ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-bootstrap-jvmsandbox ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-bootstrap-jvmsandbox ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-bootstrap/chaosblade-exec-bootstrap-jvmsandbox/target/chaosblade-exec-bootstrap-jvmsandbox-0.9.0.jar
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-plugin-dubbo 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-dubbo ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-dubbo ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 17 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-dubbo/target/classes
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-dubbo/src/main/java/com/alibaba/chaosblade/exec/plugin/dubbo/consumer/DubboConsumerEnhancer.java: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-dubbo/src/main/java/com/alibaba/chaosblade/exec/plugin/dubbo/consumer/DubboConsumerEnhancer.java使用了未经检查或不安全的操作。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-dubbo/src/main/java/com/alibaba/chaosblade/exec/plugin/dubbo/consumer/DubboConsumerEnhancer.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-dubbo ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-dubbo ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-dubbo ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-dubbo ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-dubbo/target/chaosblade-exec-plugin-dubbo-0.9.0.jar
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-plugin-jvm 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-jvm ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 2 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-jvm ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 57 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/target/classes
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/src/main/java/com/alibaba/chaosblade/exec/plugin/jvm/codecache/DynamicJavaClassGenerator.java: 某些输入文件使用或覆盖了已过时的 API。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/src/main/java/com/alibaba/chaosblade/exec/plugin/jvm/codecache/DynamicJavaClassGenerator.java: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/src/main/java/com/alibaba/chaosblade/exec/plugin/jvm/script/groovy/GroovyScriptEngine.java: 某些输入文件使用了未经检查或不安全的操作。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/src/main/java/com/alibaba/chaosblade/exec/plugin/jvm/script/groovy/GroovyScriptEngine.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-jvm ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-jvm ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-jvm ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-jvm ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/target/chaosblade-exec-plugin-jvm-0.9.0.jar
+[INFO] 
+[INFO] --- maven-shade-plugin:3.2.4:shade (default) @ chaosblade-exec-plugin-jvm ---
+[INFO] Including org.codehaus.groovy:groovy:jar:2.4.13 in the shaded jar.
+[INFO] Including commons-codec:commons-codec:jar:1.2 in the shaded jar.
+[INFO] Excluding com.alibaba.chaosblade:chaosblade-exec-common:jar:0.9.0 from the shaded jar.
+[INFO] Excluding org.slf4j:slf4j-api:jar:1.7.25 from the shaded jar.
+[INFO] Excluding ch.qos.logback:logback-classic:jar:1.2.3 from the shaded jar.
+[INFO] Excluding ch.qos.logback:logback-core:jar:1.2.3 from the shaded jar.
+[INFO] Excluding com.fasterxml.jackson.core:jackson-core:jar:2.11.2 from the shaded jar.
+[INFO] Excluding com.fasterxml.jackson.core:jackson-databind:jar:2.11.2 from the shaded jar.
+[INFO] Excluding com.fasterxml.jackson.core:jackson-annotations:jar:2.11.2 from the shaded jar.
+[INFO] Excluding cglib:cglib:jar:3.2.4 from the shaded jar.
+[INFO] Excluding org.ow2.asm:asm:jar:6.0_ALPHA from the shaded jar.
+[INFO] Excluding org.apache.ant:ant:jar:1.9.6 from the shaded jar.
+[INFO] Excluding org.apache.ant:ant-launcher:jar:1.9.6 from the shaded jar.
+[WARNING] chaosblade-exec-plugin-jvm-0.9.0.jar, commons-codec-1.2.jar, groovy-2.4.13.jar define 1 overlapping resource: 
+[WARNING]   - META-INF/MANIFEST.MF
+[WARNING] maven-shade-plugin has detected that some class files are
+[WARNING] present in two or more JARs. When this happens, only one
+[WARNING] single version of the class is copied to the uber jar.
+[WARNING] Usually this is not harmful and you can skip these warnings,
+[WARNING] otherwise try to manually exclude artifacts based on
+[WARNING] mvn dependency:tree -Ddetail=true and the above output.
+[WARNING] See http://maven.apache.org/plugins/maven-shade-plugin/
+[INFO] Replacing original artifact with shaded artifact.
+[INFO] Replacing /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/target/chaosblade-exec-plugin-jvm-0.9.0.jar with /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/target/chaosblade-exec-plugin-jvm-0.9.0-shaded.jar
+[INFO] Dependency-reduced POM written at: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jvm/dependency-reduced-pom.xml
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-plugin-mysql 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-mysql ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-mysql ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 10 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-mysql/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-mysql ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-mysql ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-mysql ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-mysql ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-mysql/target/chaosblade-exec-plugin-mysql-0.9.0.jar
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-plugin-postgrelsql 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-postgrelsql ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-postgrelsql ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 10 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-postgrelsql/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-postgrelsql ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-postgrelsql ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-postgrelsql ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-postgrelsql ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-postgrelsql/target/chaosblade-exec-plugin-postgrelsql-0.9.0.jar
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-plugin-servlet 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-servlet ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-servlet ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 9 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-servlet/target/classes
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-servlet/src/main/java/com/alibaba/chaosblade/exec/plugin/servlet/ServletParamsMatcher.java: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-servlet/src/main/java/com/alibaba/chaosblade/exec/plugin/servlet/ServletParamsMatcher.java使用了未经检查或不安全的操作。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-servlet/src/main/java/com/alibaba/chaosblade/exec/plugin/servlet/ServletParamsMatcher.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-servlet ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-servlet ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-servlet ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-servlet ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-servlet/target/chaosblade-exec-plugin-servlet-0.9.0.jar
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-plugin-druid 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-druid ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-druid ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 6 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-druid/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-druid ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-druid ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-druid ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-druid ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-druid/target/chaosblade-exec-plugin-druid-0.9.0.jar
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-plugin-http 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:3.0.2:resources (default-resources) @ chaosblade-exec-plugin-http ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-http ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 22 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-http/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:3.0.2:testResources (default-testResources) @ chaosblade-exec-plugin-http ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-http ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.22.1:test (default-test) @ chaosblade-exec-plugin-http ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.0.2:jar (default-jar) @ chaosblade-exec-plugin-http ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-http/target/chaosblade-exec-plugin-http-0.9.0.jar
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-plugin-jedis 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-jedis ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-jedis ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 10 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jedis/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-jedis ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-jedis ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-jedis ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-jedis ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-jedis/target/chaosblade-exec-plugin-jedis-0.9.0.jar
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-plugin-rocketmq 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-rocketmq ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-rocketmq ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 8 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-rocketmq/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-rocketmq ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-rocketmq ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-rocketmq ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-rocketmq ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-rocketmq/target/chaosblade-exec-plugin-rocketmq-0.9.0.jar
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-plugin-tars 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-tars ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-tars ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 11 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-tars/target/classes
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-tars/src/main/java/com/alibaba/chaosblade/exec/plugin/tars/client/TarsClientEnhancer.java: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-tars/src/main/java/com/alibaba/chaosblade/exec/plugin/tars/client/TarsClientEnhancer.java使用了未经检查或不安全的操作。
+[WARNING] /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-tars/src/main/java/com/alibaba/chaosblade/exec/plugin/tars/client/TarsClientEnhancer.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-tars ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-tars ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-tars ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-tars ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-tars/target/chaosblade-exec-plugin-tars-0.9.0.jar
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-plugin-rabbitmq 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-rabbitmq ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-rabbitmq ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 14 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-rabbitmq/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-rabbitmq ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-rabbitmq ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-rabbitmq ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-rabbitmq ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-rabbitmq/target/chaosblade-exec-plugin-rabbitmq-0.9.0.jar
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-plugin-mongodb 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-mongodb ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-mongodb ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 8 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-mongodb/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-mongodb ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-mongodb ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-mongodb ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-mongodb ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-mongodb/target/chaosblade-exec-plugin-mongodb-0.9.0.jar
+[INFO] 
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] Forking chaosblade-exec-plugin-redisson 0.9.0
+[INFO] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ chaosblade-exec-plugin-redisson ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ chaosblade-exec-plugin-redisson ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 7 source files to /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-redisson/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ chaosblade-exec-plugin-redisson ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ chaosblade-exec-plugin-redisson ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ chaosblade-exec-plugin-redisson ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ chaosblade-exec-plugin-redisson ---
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/chaosblade-exec-plugin/chaosblade-exec-plugin-redisson/target/chaosblade-exec-plugin-redisson-0.9.0.jar
+[INFO] 
+[INFO] <<< maven-assembly-plugin:2.2-beta-5:assembly (default-cli) < package @ chaosblade-exec-jvm <<<
+[INFO] 
+[INFO] 
+[INFO] --- maven-assembly-plugin:2.2-beta-5:assembly (default-cli) @ chaosblade-exec-jvm ---
+[INFO] Reading assembly descriptor: assembly.xml
+[WARNING] Cannot include project artifact: com.alibaba.chaosblade:chaosblade-exec-jvm:pom:0.9.0; it doesn't have an associated file or directory.
+[INFO]  already added, skipping
+[INFO] com already added, skipping
+[INFO] com/alibaba already added, skipping
+[INFO] com/alibaba/chaosblade already added, skipping
+[INFO] com/alibaba/chaosblade/exec already added, skipping
+[INFO]  already added, skipping
+[INFO] com already added, skipping
+[INFO] com/alibaba already added, skipping
+[INFO] com/alibaba/chaosblade already added, skipping
+[INFO] com/alibaba/chaosblade/exec already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] org/ already added, skipping
+[INFO] org/slf4j/ already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] ch/ already added, skipping
+[INFO] ch/qos/ already added, skipping
+[INFO] ch/qos/logback/ already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/maven/ch.qos.logback/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/services/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/LICENSE already added, skipping
+[INFO] META-INF/NOTICE already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/maven/com.fasterxml.jackson.core/ already added, skipping
+[INFO] META-INF/services/ already added, skipping
+[INFO] com/ already added, skipping
+[INFO] com/fasterxml/ already added, skipping
+[INFO] com/fasterxml/jackson/ already added, skipping
+[INFO] module-info.class already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/LICENSE already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/maven/com.fasterxml.jackson.core/ already added, skipping
+[INFO] com/ already added, skipping
+[INFO] com/fasterxml/ already added, skipping
+[INFO] com/fasterxml/jackson/ already added, skipping
+[INFO] module-info.class already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/NOTICE already added, skipping
+[INFO] META-INF/LICENSE already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] module-info.class already added, skipping
+[INFO] org/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] org/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] org/ already added, skipping
+[INFO] org/apache/ already added, skipping
+[INFO] org/apache/tools/ already added, skipping
+[INFO] org/apache/tools/ant/ already added, skipping
+[INFO] META-INF/LICENSE.txt already added, skipping
+[INFO] META-INF/NOTICE.txt already added, skipping
+[INFO] Building jar: /Users/xueshaoyi/work/self/goProject/chaosblade/target/cache/chaosblade-exec-jvm/target/chaosblade-java-agent-0.9.0.jar
+[INFO]  already added, skipping
+[INFO] com already added, skipping
+[INFO] com/alibaba already added, skipping
+[INFO] com/alibaba/chaosblade already added, skipping
+[INFO] com/alibaba/chaosblade/exec already added, skipping
+[INFO]  already added, skipping
+[INFO] com already added, skipping
+[INFO] com/alibaba already added, skipping
+[INFO] com/alibaba/chaosblade already added, skipping
+[INFO] com/alibaba/chaosblade/exec already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] org/ already added, skipping
+[INFO] org/slf4j/ already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] ch/ already added, skipping
+[INFO] ch/qos/ already added, skipping
+[INFO] ch/qos/logback/ already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/maven/ch.qos.logback/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/services/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/LICENSE already added, skipping
+[INFO] META-INF/NOTICE already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/maven/com.fasterxml.jackson.core/ already added, skipping
+[INFO] META-INF/services/ already added, skipping
+[INFO] com/ already added, skipping
+[INFO] com/fasterxml/ already added, skipping
+[INFO] com/fasterxml/jackson/ already added, skipping
+[INFO] module-info.class already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/LICENSE already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/maven/com.fasterxml.jackson.core/ already added, skipping
+[INFO] com/ already added, skipping
+[INFO] com/fasterxml/ already added, skipping
+[INFO] com/fasterxml/jackson/ already added, skipping
+[INFO] module-info.class already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/NOTICE already added, skipping
+[INFO] META-INF/LICENSE already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] module-info.class already added, skipping
+[INFO] org/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] org/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] org/ already added, skipping
+[INFO] org/apache/ already added, skipping
+[INFO] org/apache/tools/ already added, skipping
+[INFO] org/apache/tools/ant/ already added, skipping
+[INFO] META-INF/LICENSE.txt already added, skipping
+[INFO] META-INF/NOTICE.txt already added, skipping
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] chaosblade-exec-jvm ................................ SUCCESS [ 12.207 s]
+[INFO] chaosblade-exec-common ............................. SUCCESS [  0.028 s]
+[INFO] chaosblade-exec-service ............................ SUCCESS [  0.008 s]
+[INFO] chaosblade-exec-bootstrap .......................... SUCCESS [  0.002 s]
+[INFO] chaosblade-exec-bootstrap-jvmsandbox ............... SUCCESS [  0.009 s]
+[INFO] chaosblade-exec-plugin ............................. SUCCESS [  0.003 s]
+[INFO] chaosblade-exec-plugin-dubbo ....................... SUCCESS [  0.011 s]
+[INFO] chaosblade-exec-plugin-jvm ......................... SUCCESS [  0.940 s]
+[INFO] chaosblade-exec-plugin-mysql ....................... SUCCESS [  0.008 s]
+[INFO] chaosblade-exec-plugin-postgrelsql ................. SUCCESS [  0.008 s]
+[INFO] chaosblade-exec-plugin-servlet ..................... SUCCESS [  0.007 s]
+[INFO] chaosblade-exec-plugin-druid ....................... SUCCESS [  0.007 s]
+[INFO] chaosblade-exec-plugin-http ........................ SUCCESS [  0.170 s]
+[INFO] chaosblade-exec-plugin-jedis ....................... SUCCESS [  0.008 s]
+[INFO] chaosblade-exec-plugin-rocketmq .................... SUCCESS [  0.008 s]
+[INFO] chaosblade-exec-plugin-tars ........................ SUCCESS [  0.009 s]
+[INFO] chaosblade-exec-plugin-rabbitmq .................... SUCCESS [  0.009 s]
+[INFO] chaosblade-exec-plugin-mongodb ..................... SUCCESS [  0.007 s]
+[INFO] chaosblade-exec-plugin-redisson .................... SUCCESS [  0.008 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 13.849 s
+[INFO] Finished at: 2020-11-23T14:43:12+08:00
+[INFO] Final Memory: 29M/104M
+[INFO] ------------------------------------------------------------------------
+cp plugins/chaosblade-jvm-spec-0.9.0.yaml build-target/chaosblade-0.9.0/yaml/
+cp target/chaosblade-java-agent-0.9.0.jar build-target/chaosblade-0.9.0/lib/sandbox/module/
+cp -R target/cache/chaosblade-exec-jvm/build-target/chaosblade-0.9.0/* target/chaosblade-0.9.0
+git clone -b master https://github.com/chaosblade-io/chaosblade-exec-cplus.git target/cache/chaosblade-exec-cplus
+make -C target/cache/chaosblade-exec-cplus
+rm -rf build-target/chaosblade-0.9.0
+mkdir -p build-target/chaosblade-0.9.0/yaml build-target/chaosblade-0.9.0/lib/cplus/script
+env CGO_ENABLED=1 GO111MODULE=on go build  -o build-target/chaosblade-0.9.0/lib/cplus/chaosblade-exec-cplus main.go
+env CGO_ENABLED=1 GO111MODULE=on go run build/spec.go build-target/chaosblade-0.9.0/yaml/chaosblade-cplus-spec.yaml
+cp -R script/* build-target/chaosblade-0.9.0/lib/cplus/script
+chmod -R 755 build-target/chaosblade-0.9.0/lib/cplus
+cp -R target/cache/chaosblade-exec-cplus/build-target/chaosblade-0.9.0/* target/chaosblade-0.9.0
+docker run --rm \
+    		-w /Users/xueshaoyi/work/self/goProject/chaosblade/target/chaosblade-0.9.0 \
+    		-v /Users/xueshaoyi/work/self/goProject/chaosblade/target/chaosblade-0.9.0:/Users/xueshaoyi/work/self/goProject/chaosblade/target/chaosblade-0.9.0 \
+     		chaosbladeio/chaosblade-upx:3.96 \
+    		--best \
+    		blade /Users/xueshaoyi/work/self/goProject/chaosblade/target/chaosblade-0.9.0/bin/*
+                       Ultimate Packer for eXecutables
+                          Copyright (C) 1996 - 2020
+UPX 3.96        Markus Oberhumer, Laszlo Molnar & John Reiser   Jan 23rd 2020
+
+        File size         Ratio      Format      Name
+   --------------------   ------   -----------   -----------
+  33706616 ->   8556560   25.39%   macho/amd64   blade
+   4344612 ->   1495056   34.41%   macho/amd64   chaos_addfile
+   4718340 ->   1613840   34.20%   macho/amd64   chaos_appendfile
+   4718244 ->   1613840   34.20%   macho/amd64   chaos_burncpu
+   4344660 ->   1490960   34.32%   macho/amd64   chaos_changedns
+   4349084 ->   1499152   34.47%   macho/amd64   chaos_chmodfile
+   4344516 ->   1490960   34.32%   macho/amd64   chaos_deletefile
+   8008260 ->   3842064   47.98%   macho/amd64   chaos_fuse
+   4348996 ->   1495056   34.38%   macho/amd64   chaos_killprocess
+   4344620 ->   1490960   34.32%   macho/amd64   chaos_movefile
+   6110940 ->   2068496   33.85%   macho/amd64   chaos_occupynetwork
+   4344612 ->   1495056   34.41%   macho/amd64   chaos_stopprocess
+   --------------------   ------   -----------   -----------
+  87683500 ->  28152000   32.11%                 [ 12 files ]
+
+Packed 12 files.
+tar zcvf target/chaosblade-0.9.0.tar.gz -C target chaosblade-0.9.0
